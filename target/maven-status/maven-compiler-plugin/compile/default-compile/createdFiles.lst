@@ -1,0 +1,15 @@
+com/mercedes/exception/NotFoundExceptionMapper.class
+com/mercedes/artists/model/Artist.class
+com/mercedes/artists/model/RestError.class
+com/mercedes/artists/Artists$1.class
+com/mercedes/exception/ExceptionMapper.class
+com/mercedes/artists/Artists$3.class
+com/mercedes/exception/AuthenticationExceptionMapper.class
+com/mercedes/exception/InternalServerErrorMapping.class
+com/mercedes/artists/Artists$2.class
+com/mercedes/artists/model/Error.class
+com/mercedes/artists/Artists.class
+com/mercedes/exception/BadRequestMapper.class
+com/mercedes/exception/ServiceUnavailableExceptionMapper.class
+com/mercedes/artists/Sorting.class
+com/mercedes/artists/Artists$4.class

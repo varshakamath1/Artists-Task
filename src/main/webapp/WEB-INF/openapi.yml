@@ -1,0 +1,261 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Simple API
+  description: A simple API to illustrate OpenAPI concepts
+
+servers:
+  - url: https://company.io
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /artists:
+    get:
+      description: Returns a list of artists
+      operationId: getAllArtists
+      parameters:
+        - $ref: "#/components/parameters/PageLimit"
+        - $ref: "#/components/parameters/SortBy"
+      responses:
+        200:
+          description: Successfully returned a list of artists, optional limited size and sorted
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Artist"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+        500:
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+
+    post:
+      security:
+        - ApiKeyAuth: []
+
+      description: Lets a user post a new artist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/Artist"
+      responses:
+        204:
+          description: Successfully created a new artist (list)
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+        500:
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+
+  /artists/{username}:
+    get:
+      description: Obtain information about an artist from his or her unique username
+      parameters:
+        - name: username
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        200:
+          description: Successfully returned an artist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  artist_name:
+                    type: string
+                  artist_genre:
+                    type: string
+                  albums_recorded:
+                    type: integer
+
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+        500:
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+
+  schemas:
+    Artist:
+      type: object
+      required:
+        - username
+      properties:
+        artist_name:
+          type: string
+        artist_genre:
+          type: string
+        albums_recorded:
+          type: integer
+        username:
+          type: string
+    RestError:
+      title: RestError
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: integer
+          format: int64
+          description: The corresponding HTTP status code.
+        method:
+          type: string
+          description: The corresponding HTTP Method (GET,POST,...)
+        correlation_id:
+          type: string
+          description: the generated Id, that is used for backend logging
+        request_query:
+          type: string
+          description: the query as string
+        request_URI:
+          type: string
+          description: the requested URI
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Error"
+    Error:
+      type: object
+      additionalProperties: false
+      description: error response object in case something went wrong
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Internal error code for ambiguous status codes
+          example: "E-40010"
+        title:
+          type: string
+          description: title of the error, e.g. to show in the error box title bar
+          example: ID not found
+        message:
+          type: string
+          description: Human readable error
+          example: The requested ID could not be found on our systems. Please verify its correctness or call service personell.
+        docUrl:
+          type: string
+          description: Documentation reference
+          example: https://example.org
+  parameters:
+    PageLimit:
+      name: limit
+      in: query
+      description: Limits the number of items on a page
+      schema:
+        type: integer
+    SortBy:
+      name: sort
+      in: query
+      description: Order by the property ( a field in Artist )
+      schema:
+        type: string
+
+  responses:
+    204:
+      description: "HTTP 204 - Request was Successful, but the contract is not eligible for an esq due to contract type or product type "
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
+    # API Request not Modified
+    304:
+      description: "HTTP 304 Not Modified - The URL has not been modified since the specified date"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
+    # API Request Formatting Error
+    400:
+      description: "HTTP 400 Bad Request / Validation Error - The server cannot or will not process the request due to an apparent client error (e.g., malformed request syntax, size too large, invalid request message framing, or deceptive request routing)."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
+    # API Request Formatting Error
+    415:
+      description: "HTTP 415 Unsupported Media Type - The server will not accept the request, because the mediatype is not supported ."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
+    # Auth Error
+    401:
+      description: "HTTP 401 Unauthorized  - Authentication credentials are required to the resource. All requests must be authenticated."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
+    403:
+      description: "HTTP 403 Forbidden - The request was valid, but the server is refusing action. The user might not have the necessary permissions for a resource, or may need an account of some sort."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
+    404:
+      description: "HTTP 404 Not found - We could not locate the resource based on the specified URL. The requested resource could not be found but may be available in the future. Subsequent requests by the client are permissible."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
+    # Business Logic Error
+    429:
+      description: "HTTP 429 Too Many Requests - You have been rate-limited. See Retry-After and try again."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
+    # System-level error
+    500:
+      description: "HTTP 500 Internal Server Error  - A generic error message, given when an unexpected condition was encountered and no more specific message is suitable."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
+    503:
+      description: "HTTP 503 - The server is currently unavailable (because it is overloaded or down for maintenance). Generally, this is a temporary state."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RestError"
