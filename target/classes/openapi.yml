@@ -191,6 +191,9 @@ components:
       description: Order by the property ( a field in Artist )
       schema:
         type: string
+        enum: 
+          - DESC
+          - ASC
 
   responses:
     204:

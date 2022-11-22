@@ -83,26 +83,26 @@ public class Artists{
 		} 		
 	}
 	
-	@Path("{artist_name}")
+	@Path("{username}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getArtistsByArtistName(@PathParam("artist_name") String artistName) {
+	public Response getArtistsByArtistName(@PathParam("username") String username) {
 
 		try {
 			//Convert Json string into list of Artist objects
 			List<Artist> artistsVO = mapper.readValue(extractJson(), new TypeReference<List<Artist>>(){});
 			for(Artist arr: artistsVO)
 			{
-				if(arr.getArtistName().equalsIgnoreCase(artistName))
+				if(arr.getUsername().equalsIgnoreCase(username))
 				{
 					return Response.ok().entity(mapper.writeValueAsString(arr)).build();					
 				}			
 			}
 			{
-				throw new BadRequestException("artist_name not found");
+				throw new BadRequestException("username not found");
 			}
 		} catch (IOException | ParseException | URISyntaxException e) {
-			logger.error("NTERNAL_SERVER_ERROR :"+e.getMessage());
+			logger.error("INTERNAL_SERVER_ERROR :"+e.getMessage());
 			throw new InternalServerErrorException(e);
 		}		
 	}
@@ -156,7 +156,7 @@ public class Artists{
 				throw new AuthenticationException("API-KEY invalid");
 			}
 		} catch (IOException | ParseException | URISyntaxException | AuthenticationException e) {
-			logger.error("NTERNAL_SERVER_ERROR :"+e.getMessage());
+			logger.error("INTERNAL_SERVER_ERROR :"+e.getMessage());
 			throw new InternalServerErrorException(e); 
 		}
 		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Internal Error").build();
